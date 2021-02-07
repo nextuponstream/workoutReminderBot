@@ -6,10 +6,10 @@ Create your own environnement file `.env` by following the file example `example
 ## Start
 ```bash
 git clone git@github.com:nextuponstream/workoutReminderBot.git
-cd workoutReminderBot
-go run app.go
+cd workoutReminderBot/scripts
+sh runBot.sh
 ```
-# Features
+# How to use the bot
 ## Basic commands
 | Command | description |
 |---|----|
