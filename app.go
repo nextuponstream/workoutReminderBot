@@ -8,9 +8,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+const BOT_TOKEN_STRING = "BOT_TOKEN"
+
 func main() {
 	godotenv.Load(".env")
-	botToken := os.Getenv("BOT_TOKEN")
+	botToken := os.Getenv(BOT_TOKEN_STRING)
 	bot, err := tgbotapi.NewBotAPI(botToken)
 	if err != nil {
 		log.Panic(err)
