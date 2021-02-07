@@ -8,4 +8,10 @@ cd workoutReminderBot
 go run app.go
 ```
 # Features
-TODO
+## Basic commands
+| Command | description |
+|---|----|
+|`/help` | not implemented |
+|`/createActivity` | not implemented |
+|`/createWorkout` | not implemented |
+|`/startWorkout` | not implemented |
