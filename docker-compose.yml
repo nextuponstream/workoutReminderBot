@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  bot:
+    build: ./docker/go
+    container_name: wrb_go
+    env_file:  
+      - bot.env
+    ports: 
+      - 8443:3000
