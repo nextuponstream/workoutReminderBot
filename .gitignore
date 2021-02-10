@@ -1,2 +1,3 @@
 workoutReminderBot
-.env
+bot.env
+docker/go/src
