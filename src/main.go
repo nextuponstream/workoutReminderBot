@@ -4,16 +4,35 @@ import (
 	"log"
 	"os"
 
+	entities "github.com/nextuponstream/workoutReminderBot/entities"
+	activity "github.com/nextuponstream/workoutReminderBot/handlers/create/activity"
 	help "github.com/nextuponstream/workoutReminderBot/handlers/help"
 	unknown "github.com/nextuponstream/workoutReminderBot/handlers/unknown"
+	mongo "github.com/nextuponstream/workoutReminderBot/repositories/mongo"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
 
-const BOT_TOKEN_STRING = "BOT_TOKEN"
+const BOT_TOKEN_STR = "BOT_TOKEN"
+const MDB_U_STR = "MONGO_INITDB_ROOT_USERNAME"
+const MDB_PW_STR = "MONGO_INITDB_ROOT_PASSWORD"
+const MDB_DB_NAME_STR = "MONGO_INITDB_DATABASE"
+const MDB_URI_STR = "MDB_URI"
 
 func main() {
-	botToken := os.Getenv(BOT_TOKEN_STRING)
+	mdbUser := os.Getenv(MDB_U_STR)
+	mdbPw := os.Getenv(MDB_PW_STR)
+	mdbName := os.Getenv(MDB_DB_NAME_STR)
+	mdbUri := os.Getenv(MDB_URI_STR)
+
+	mongoDb := mongo.CreateMongoDb(mdbUser, mdbPw, mdbName, mdbUri)
+	defer mongoDb.Disconnect()
+
+	// context
+	entities.InitDatabase(&mongoDb)
+
+	// telegram connection
+	botToken := os.Getenv(BOT_TOKEN_STR)
 	bot, err := tgbotapi.NewBotAPI(botToken)
 	if err != nil {
 		log.Panic(err)
@@ -42,6 +61,10 @@ func main() {
 		switch update.Message.Command() {
 		case "help":
 			go help.Handler(bot, userMessage)
+		case "activity":
+			go activity.Handler(bot, userMessage)
+		case "viewactivity":
+			go activity.HandlerView(bot, userMessage)
 		default:
 			go unknown.Handler(bot, userMessage)
 		}
