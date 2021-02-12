@@ -5,7 +5,7 @@ import (
 )
 
 func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
-	reply := "You have created a new Activity"
+	reply := "Unknown command"
 	msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
 	msg.ReplyToMessageID = userMessage.MessageID
 

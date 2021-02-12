@@ -3,19 +3,20 @@ package activity
 import (
 	"strings"
 
+	"go.mongodb.org/mongo-driver/mongo"
+
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	e "github.com/nextuponstream/workoutReminderBot/entities"
 )
 
-func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+func HandlerView(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	var reply string
 
-	usrMsg := userMessage.Text
 	sep := " "
 
-	tokens := strings.Split(usrMsg, sep)
+	tokens := strings.Split(userMessage.Text, sep)
 	if len(tokens) < 2 {
-		reply = "Please provide a name to the activity"
+		reply = "Please provide a name to the activity you want to view"
 		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
 		msg.ReplyToMessageID = userMessage.MessageID
 		bot.Send(msg)
@@ -23,18 +24,13 @@ func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	}
 
 	activityName := tokens[1]
-	a := e.Create(activityName)
-
-	if len(tokens) > 2 {
-		description := strings.Replace(usrMsg, "/activity"+sep+activityName+sep, "", 1)
-		a.Description = description
-	}
-
-	err := e.InsertActivity(a)
-	if err != nil {
+	activity, err := e.ViewActivity(activityName)
+	if err == mongo.ErrNoDocuments {
+		reply = "This activity doesn't exist"
+	} else if err != nil {
 		reply = err.Error()
 	} else {
-		reply = "Activity " + activityName + " was created"
+		reply = "Description: " + activity.Description
 	}
 
 	msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)

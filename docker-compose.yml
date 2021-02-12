@@ -1,9 +1,24 @@
 version: '3.9'
-services:
+networks:
+  web:
+
+services: 
+  mdb:
+    build: ./docker/mongo
+    container_name: wrb_mdb
+    env_file:  
+      - .env
+    ports: 
+      - 8444:27017
+    networks: 
+      - web
+
   bot:
     build: ./docker/go
     container_name: wrb_go
     env_file:  
-      - bot.env
+      - .env
     ports: 
       - 8443:3000
+    networks: 
+      - web
