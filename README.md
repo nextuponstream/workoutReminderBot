@@ -4,7 +4,7 @@
 |---|----|
 |`/help` | instructions on bot usage |
 |`/activity <name of the activity> <a description>` | create an activity for your next workout |
-|`/viewActivity <name of the activity>`| view an activity description |
+|`/viewactivity <name of the activity>`| view an activity description |
 |`/createWorkout` | not implemented |
 |`/startWorkout` | not implemented |
 
