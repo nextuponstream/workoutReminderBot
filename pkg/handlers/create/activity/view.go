@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
-	e "github.com/nextuponstream/workoutReminderBot/entities"
+	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
 func HandlerView(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {

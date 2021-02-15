@@ -8,7 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	e "github.com/nextuponstream/workoutReminderBot/entities"
+	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
 // from https://www.mongodb.com/golang

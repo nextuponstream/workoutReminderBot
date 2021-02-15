@@ -1,3 +1,5 @@
-workoutReminderBot
 .env
-docker/go/src
+docker/go/cmd
+docker/go/pkg
+docker/go/go.mod
+cmd/bot/bot
