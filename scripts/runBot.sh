@@ -3,9 +3,16 @@ TIMEOUT=25
 
 ./startDbs.sh # dbs started in background
 
+BUILD=docker/go
+
 cd ..
-rm -rf docker/go/src
-cp -R src docker/go/src # allow for docker to build the app with the src
+
+rm -rf $BUILD/pkg
+cp -R pkg $BUILD/pkg
+rm -rf $BUILD/cmd
+cp -R cmd $BUILD/cmd
+rm $BUILD/go.mod
+cp go.mod $BUILD/go.mod
 
 # wait on dbs to start before running our bots
 docker build --tag wrb_wait_dbs docker/bash

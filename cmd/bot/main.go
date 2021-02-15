@@ -4,11 +4,11 @@ import (
 	"log"
 	"os"
 
-	entities "github.com/nextuponstream/workoutReminderBot/entities"
-	activity "github.com/nextuponstream/workoutReminderBot/handlers/create/activity"
-	help "github.com/nextuponstream/workoutReminderBot/handlers/help"
-	unknown "github.com/nextuponstream/workoutReminderBot/handlers/unknown"
-	mongo "github.com/nextuponstream/workoutReminderBot/repositories/mongo"
+	entities "github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	activity "github.com/nextuponstream/workoutReminderBot/pkg/handlers/create/activity"
+	help "github.com/nextuponstream/workoutReminderBot/pkg/handlers/help"
+	unknown "github.com/nextuponstream/workoutReminderBot/pkg/handlers/unknown"
+	mongo "github.com/nextuponstream/workoutReminderBot/pkg/repositories/mongo"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
