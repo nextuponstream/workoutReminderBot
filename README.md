@@ -7,6 +7,7 @@
 |`/viewactivity <name of the activity>`| view an activity description |
 |`/createWorkout` | not implemented |
 |`/startWorkout` | not implemented |
+| `/exercise` | not implemented |
 
 # Setup
 ## BotFather
@@ -18,6 +19,7 @@ With BotFather, set commands with `/setCommands` and paste:
 help - instructions on bot usage
 activity - create an activity for your next workout with an optionnal description (e.g. /activity push-ups let's f*cking goooooo!)
 viewactivity - view an activity description
+exercise - creates an exercise for activity with repeats, duration, length (in km) (e.g. /exercise run l2)
 ```
 ## Environnement file
 Create your own environnement file `bot.env` by following the file example `example.bot.env`.

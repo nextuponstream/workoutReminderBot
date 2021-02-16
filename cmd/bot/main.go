@@ -5,7 +5,8 @@ import (
 	"os"
 
 	entities "github.com/nextuponstream/workoutReminderBot/pkg/entities"
-	activity "github.com/nextuponstream/workoutReminderBot/pkg/handlers/create/activity"
+	activity "github.com/nextuponstream/workoutReminderBot/pkg/handlers/activity"
+	exercise "github.com/nextuponstream/workoutReminderBot/pkg/handlers/exercise"
 	help "github.com/nextuponstream/workoutReminderBot/pkg/handlers/help"
 	unknown "github.com/nextuponstream/workoutReminderBot/pkg/handlers/unknown"
 	mongo "github.com/nextuponstream/workoutReminderBot/pkg/repositories/mongo"
@@ -65,6 +66,8 @@ func main() {
 			go activity.Handler(bot, userMessage)
 		case "viewactivity":
 			go activity.HandlerView(bot, userMessage)
+		case "exercise":
+			go exercise.Handler(bot, userMessage)
 		default:
 			go unknown.Handler(bot, userMessage)
 		}

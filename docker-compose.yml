@@ -12,6 +12,16 @@ services:
       - 8444:27017
     networks: 
       - web
+  ngdb:
+    build: ./docker/neo4j
+    container_name: wrb_ngdb
+    env_file:  
+      - .env
+    ports:
+      - 7474:7474 
+      - 7687:7687
+    networks: 
+      - web
 
   bot:
     build: ./docker/go
