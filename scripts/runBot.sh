@@ -5,6 +5,10 @@ TIMEOUT=25
 
 BUILD=docker/go
 
+// TODO remove
+echo 'Removing all unnecessary containers/images that are used in build'
+docker system prune --volume
+
 cd ..
 
 rm -rf $BUILD/pkg
@@ -25,5 +29,7 @@ if [ "$hasTimeout" -ne 0 ]; then # when timeout occurs
     echo "error: mongo database didn't start in time!"
     exit 1
 fi
+
+// TODO wait on neo4j gdb
 
 docker-compose up --build bot

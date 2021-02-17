@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
+	"github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
 // Handler creates an exercise
@@ -17,7 +18,7 @@ func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	usrMsg := userMessage.Text
 	sep := " "
 
-	// HAHA:
+	ex := entities.Exercise{}
 
 	tokens := strings.Split(usrMsg, sep)
 	if len(tokens) < 2 {
@@ -38,9 +39,11 @@ func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 		}
 		switch c {
 		case 'n':
+
 			log.Println(activityName, "has to be done", num, "in a row")
 			break
 		case 'r':
+			ex.Repeat = num
 			log.Println(activityName, "with", num, "repeats")
 			break
 		case 'l':
@@ -52,6 +55,12 @@ func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 			bot.Send(msg)
 			return
 		}
+	}
+
+	err := entities.InsertExercise(ex)
+	if err != nil {
+		log.Print(err)
+		reply = "an error occured while creating exercise"
 	}
 
 	msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
