@@ -9,7 +9,7 @@ import (
 	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
-func HandlerView(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+func HandlerView(p e.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	var reply string
 
 	sep := " "
@@ -24,7 +24,7 @@ func HandlerView(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	}
 
 	activityName := tokens[1]
-	activity, err := e.ViewActivity(activityName)
+	activity, err := p.ViewActivity(activityName)
 	if err == mongo.ErrNoDocuments {
 		reply = "This activity doesn't exist"
 	} else if err != nil {

@@ -26,6 +26,25 @@ func Create(user string, password string) Neo4j {
 
 	n.driver = driver
 
+	// create constraints
+	telegramUserConstraint := "CREATE CONSTRAINT telegramUser IF NOT EXISTS\n" +
+		"ON (u:User)\n" +
+		"ASSERT u.tid IS UNIQUE\n"
+	activityConstraint := "CREATE CONSTRAINT activity IF NOT EXISTS\n" +
+		"ON (a:Activity)\n" +
+		"ASSERT a.name IS UNIQUE\n"
+
+	queries := []string{telegramUserConstraint, activityConstraint}
+	session := n.driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+
+	for _, q := range queries {
+		_, err := session.Run(q, map[string]interface{}{})
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
 	return n
 }
 

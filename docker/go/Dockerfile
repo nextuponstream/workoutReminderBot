@@ -1,11 +1,11 @@
 FROM golang:1.15 as build
 
 WORKDIR /go/src/github.com/nextuponstream/workoutReminderBot
-
 COPY pkg pkg
 COPY cmd cmd
 COPY go.mod go.mod
 RUN go get -d -v ./...
+RUN go test -v ./...
 WORKDIR /go/src/github.com/nextuponstream/workoutReminderBot/cmd/bot
 RUN CGO_ENABLED=0 go build -v -o /bin/workoutReminderBot
 

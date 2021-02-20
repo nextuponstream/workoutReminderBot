@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"os"
+	"strings"
 
 	entities "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 	activity "github.com/nextuponstream/workoutReminderBot/pkg/handlers/activity"
@@ -34,11 +35,12 @@ func main() {
 	// TODO env
 	user := "neo4j"
 	pw := os.Getenv(NEO4J_AUTH_STR)
+	pw = strings.TrimPrefix(pw, "neo4j/")
 	neo4jGdp := neo4j.Create(user, pw)
 	defer neo4jGdp.Close()
 
 	// context
-	entities.InitDatabase(&mongoDb, &neo4jGdp)
+	p := entities.InitDatabase(&mongoDb, &neo4jGdp)
 
 	// telegram connection
 	botToken := os.Getenv(BOT_TOKEN_STR)
@@ -71,11 +73,11 @@ func main() {
 		case "help":
 			go help.Handler(bot, userMessage)
 		case "activity":
-			go activity.Handler(bot, userMessage)
+			go activity.Handler(p, bot, userMessage)
 		case "viewactivity":
-			go activity.HandlerView(bot, userMessage)
+			go activity.HandlerView(p, bot, userMessage)
 		case "exercise":
-			go exercise.Handler(bot, userMessage)
+			go exercise.Handler(p, bot, userMessage)
 		default:
 			go unknown.Handler(bot, userMessage)
 		}

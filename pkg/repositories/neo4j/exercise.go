@@ -1,52 +1,57 @@
 package neo4j
 
 import (
-	"log"
-
+	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
 	"github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
-func (n *Neo4j) InsertExercise(e entities.Exercise) error {
-	item, err := n.insertItem()
-	if err != nil {
-		log.Fatal(err)
+func (n *Neo4j) AddExerciseIfNotExists(e entities.Exercise, user tgbotapi.User, a entities.Activity) error {
+	session := n.driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+	//  https://stackoverflow.com/a/24016201
+	queryExercise :=
+		"MERGE (u:User { tid: $userId })\n" +
+			"MERGE (a:Activity { name: $activityName })\n" +
+			"MERGE (u)-[:EXERCISE { " +
+			"reps: $reps, " +
+			"set: $set, " +
+			"length: $length, " +
+			"duration: $duration, " +
+			"notes: $notes " +
+			"}]->(a)"
+	queries := []string{queryExercise}
+	params := map[string]interface{}{
+		"userId":       user.ID,
+		"activityName": a.Name,
+		"reps":         e.Reps,
+		"set":          e.Set,
+		"length":       e.Length,
+		"duration":     e.Duration,
+		"notes":        e.Notes,
 	}
-	log.Print(item)
+
+	for _, query := range queries {
+		_, err := session.Run(query, params)
+		if err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
-func (n *Neo4j) insertItem() (*Item, error) {
-	session := n.driver.NewSession(neo4j.SessionConfig{})
-	defer session.Close()
-	// FIXME TransactionExecutionLimit: Timeout after 23 attempts,
-	// last error: ConnectivityError: Unable to retrieve routing table from ngdb:7687:
-	// dial tcp: lookup ngdb on 127.0.0.11:53: no such host
-	result, err := session.WriteTransaction(createItemFn)
-	if err != nil {
-		log.Println("error writing transaction")
-		return nil, err
+// TODO get all exercises from user
+/*
+re := record.(*db.Record)
+	if id, ok := re.Get("n.id"); ok {
+		item.Id = id.(int64)
+	} else {
+		return item, errors.New("could not find id field")
 	}
-	return result.(*Item), nil
-}
+	if name, ok := re.Get("n.name"); ok {
+		item.Name = name.(string)
+	} else {
+		return item, errors.New("could not find name field")
+	}
 
-func createItemFn(tx neo4j.Transaction) (interface{}, error) {
-	query := "CREATE (n:Item { id: $id, name: $name }) RETURN n.id, n.name"
-	records, err := tx.Run(query, map[string]interface{}{
-		"id":   1,
-		"name": "Item 1",
-	})
-	// In face of driver native errors, make sure to return them directly.
-	// Depending on the error, the driver may try to execute the function again.
-	if err != nil {
-		log.Print("error writing record")
-		return nil, err
-	}
-	record, err := neo4j.Single(records, err)
-	if err != nil {
-		log.Print("error single")
-		return nil, err
-	}
-	// You can also retrieve values by name, with e.g. `id, found := record.Get("n.id")`
-	return record, nil
-}
+*/

@@ -1,13 +1,19 @@
 package activity
 
 import (
+	"log"
 	"strings"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
-func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+func Handler(p e.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+	err := p.AddUserIfNotExists(*userMessage.From)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var reply string
 
 	usrMsg := userMessage.Text
@@ -23,14 +29,14 @@ func Handler(bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	}
 
 	activityName := tokens[1]
-	a := e.Create(activityName)
+	a := e.CreateActivity(activityName)
 
 	if len(tokens) > 2 {
 		description := strings.Replace(usrMsg, "/activity"+sep+activityName+sep, "", 1)
 		a.Description = description
 	}
 
-	err := e.InsertActivity(a)
+	err = p.AddActivityIfNotExists(a)
 	if err != nil {
 		reply = err.Error()
 	} else {

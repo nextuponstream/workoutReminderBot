@@ -11,14 +11,17 @@ import (
 	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
 )
 
-// from https://www.mongodb.com/golang
+// GetActivities
+func (m *Mongo) getActivities() *mongo.Collection {
+	return m.database.Collection("activities")
+}
 
+// GetActivity from the mongo db activities collection
 func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
-	collection := m.database.Collection("activities")
 	filter := bson.D{{"name", activityName}}
 
 	var activity e.Activity
-	err := collection.FindOne(context.TODO(), filter).Decode(&activity)
+	err := m.getActivities().FindOne(context.TODO(), filter).Decode(&activity)
 	if err != nil {
 		// ErrNoDocuments means that the filter did not match any documents in the collection
 		if err == mongo.ErrNoDocuments {
@@ -30,7 +33,8 @@ func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
 	return activity, err
 }
 
-func (m *Mongo) ActivityExists(activityName string) (bool, error) {
+// ActivityExists returns true if activity exists
+func (m *Mongo) activityExists(activityName string) (bool, error) {
 	_, err := m.GetActivity(activityName)
 	isMissing := err == mongo.ErrNoDocuments
 	if isMissing {
@@ -42,8 +46,9 @@ func (m *Mongo) ActivityExists(activityName string) (bool, error) {
 	}
 }
 
-func (m *Mongo) InsertActivity(activity e.Activity) error {
-	exists, err := m.ActivityExists(activity.Name)
+// AddActivityIfNotExists in mongo db in activities collection
+func (m *Mongo) AddActivityIfNotExists(activity e.Activity) error {
+	exists, err := m.activityExists(activity.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,8 +57,7 @@ func (m *Mongo) InsertActivity(activity e.Activity) error {
 		return errors.New("activity already exists")
 	}
 
-	collection := m.database.Collection("activities")
-	_, err = collection.InsertOne(context.TODO(), activity)
+	_, err = m.getActivities().InsertOne(context.TODO(), activity)
 	if err != nil {
 		log.Fatal(err)
 	}

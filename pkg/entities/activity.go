@@ -5,18 +5,18 @@ type Activity struct {
 	Description string `json:"description,omitempty"`
 }
 
-func Create(name string) Activity {
+func CreateActivity(name string) Activity {
 	a := Activity{}
 	a.Name = name
 	return a
 }
 
-func InsertActivity(activity Activity) error {
-	return p.InsertActivity(activity)
+func (p *Persistence) AddActivityIfNotExists(a Activity) error {
+	return p.dp.AddActivityIfNotExists(a)
 }
 
-func ViewActivity(activityName string) (Activity, error) {
-	return p.GetActivity(activityName)
+func (p *Persistence) ViewActivity(activityName string) (Activity, error) {
+	return p.dp.GetActivity(activityName)
 }
 
 func (a *Activity) SetDescription(desc string) {
