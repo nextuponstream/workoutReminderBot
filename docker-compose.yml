@@ -5,7 +5,7 @@ networks:
 services: 
   mdb:
     build: ./docker/mongo
-    container_name: wrb_mdb
+    container_name: ${CONTAINER_NAME_MONGO}
     env_file:  
       - .env
     ports: 

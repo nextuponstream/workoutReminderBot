@@ -3,21 +3,24 @@ package exercise_test
 import (
 	"testing"
 
-	"github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
 	"github.com/nextuponstream/workoutReminderBot/pkg/handlers/exercise"
 )
 
-type Ex = entities.Exercise
+type Ex = domain.Exercise
 
 func TestGetE(t *testing.T) {
 
 	tests := []struct {
 		msg         string
-		expected    entities.Exercise
+		expected    domain.Exercise
 		wantError   bool
 		expectedErr error
 	}{
 		{"/activity pushups", Ex{Reps: 0, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
+		{"/activity pushups\n", Ex{Reps: 0, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
+		{"/activity pushups\n\n", Ex{Reps: 0, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
+		{"/activity pushups\nr", Ex{Reps: 0, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
 		{"/activity pushups\nr 3", Ex{Reps: 3, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
 		{"/activity pushups\nr 4", Ex{Reps: 4, Set: 0, Length: 0, Duration: "", Notes: ""}, false, nil},
 		{"/activity pushups\ns 5", Ex{Reps: 0, Set: 5, Length: 0, Duration: "", Notes: ""}, false, nil},

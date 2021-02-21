@@ -15,11 +15,10 @@ type Neo4j struct {
 	driver neo4j.Driver
 }
 
-// Create a neo4j graph database
-func Create(user string, password string) Neo4j {
+// Create a neo4j graph database with user, password and address
+func Create(user string, password string, uri string) Neo4j {
 	n := Neo4j{}
-	// TODO connexion string
-	driver, err := neo4j.NewDriver("neo4j://ngdb:7687", neo4j.BasicAuth(user, password, ""))
+	driver, err := neo4j.NewDriver(uri, neo4j.BasicAuth(user, password, ""))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -3,11 +3,11 @@
 | Command | description |
 |---|----|
 |`/help` | instructions on bot usage |
-|`/activity <name of the activity> <a description>` | create an activity for your next workout |
+| `/exercise <activity name> [<r/s/l/d/n value>]` | create exercise for activity and optionnaly indicate its reps, sets, length, duration and notes |
+|`/activity <name of the activity> <a description>` | provide a description for an activity |
 |`/viewactivity <name of the activity>`| view an activity description |
 |`/createWorkout` | not implemented |
 |`/startWorkout` | not implemented |
-| `/exercise` | not implemented |
 
 # Setup
 ## BotFather
@@ -17,12 +17,12 @@ Go on telegram, contact BotFather and create a new bot via `/newBot`. Set up a b
 With BotFather, set commands with `/setCommands` and paste:
 ```
 help - instructions on bot usage
+exercise - create exercise for activity and optionnaly indicate its reps, sets, length, duration and notes (e.g. /exercise <activity name> [<r/s/l/d/n value>])
 activity - create an activity for your next workout with an optionnal description (e.g. /activity push-ups let's f*cking goooooo!)
 viewactivity - view an activity description
-exercise - creates an exercise for activity with repeats, duration, length (in km) (e.g. /exercise run l2)
 ```
 ## Environnement file
-Create your own environnement file `bot.env` by following the file example `example.bot.env`.
+Create your own environnement file `.env` by following the example file `example.env`.
 ## Start
 ```bash
 git clone git@github.com:nextuponstream/workoutReminderBot.git

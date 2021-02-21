@@ -15,15 +15,17 @@ type Mongo struct {
 	database *mongo.Database
 }
 
-func CreateMongoDb(user string, pw string, name string, uri string) Mongo {
-	// mongo db connection
+// Create mongo database with user, password, database name and address
+func Create(user string, password string, name string, uri string) Mongo {
 	// ref: https://www.mongodb.com/golang
-	authenticationURI := "mongodb://" + user + ":" + pw + "@" + uri
+	authenticationURI := "mongodb://" + user + ":" + password + "@" + uri
 	client, err := mongo.NewClient(options.Client().ApplyURI(authenticationURI))
 	if err != nil {
 		log.Fatal(err)
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
 	err = client.Connect(ctx)
 	if err != nil {
 		log.Fatal(err)
@@ -34,6 +36,7 @@ func CreateMongoDb(user string, pw string, name string, uri string) Mongo {
 	return Mongo{client, ctx, database}
 }
 
+// Disconnect defer ressources liberation of the mongo database
 func (m *Mongo) Disconnect() {
 	m.client.Disconnect(m.ctx)
 }

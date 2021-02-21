@@ -1,4 +1,4 @@
-package entities
+package domain
 
 import tgbotapi "github.com/Syfaro/telegram-bot-api"
 

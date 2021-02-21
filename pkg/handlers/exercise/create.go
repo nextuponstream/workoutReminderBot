@@ -7,11 +7,11 @@ import (
 	"strings"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
-	"github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
 )
 
-// Handler creates an exercise
-func Handler(p entities.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+// Handler persist an activity created by the telegram user
+func Handler(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	err := p.AddUserIfNotExists(*userMessage.From)
 	if err != nil {
 		log.Fatal(err)
@@ -43,7 +43,7 @@ func Handler(p entities.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi
 	}
 
 	activityName = tokens[1]
-	a := entities.CreateActivity(activityName)
+	a := domain.CreateActivity(activityName)
 	err = p.AddExerciseIfNotExists(ex, *userMessage.From, a)
 	if err != nil {
 		reply = "an error occured while creating exercise"
@@ -60,13 +60,16 @@ func Handler(p entities.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi
 }
 
 // getExercice from user message
-func GetExercice(usrMsg string) (entities.Exercise, error) {
-	ex := entities.Exercise{}
+func GetExercice(usrMsg string) (domain.Exercise, error) {
+	ex := domain.Exercise{}
 	sep := " "
 
 	lines := strings.Split(usrMsg, "\n")
 	for _, line := range lines[1:] {
 		tokens := strings.TrimPrefix(line, sep)
+		if len(tokens) < 2 {
+			continue
+		}
 		c := tokens[0]
 		arg := strings.SplitAfterN(line, sep, 2)[1]
 		switch c {

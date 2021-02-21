@@ -6,10 +6,10 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
-	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	d "github.com/nextuponstream/workoutReminderBot/pkg/domain"
 )
 
-func HandlerView(p e.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+func HandlerView(p d.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	var reply string
 
 	sep := " "
@@ -28,7 +28,7 @@ func HandlerView(p e.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Me
 	if err == mongo.ErrNoDocuments {
 		reply = "This activity doesn't exist"
 	} else if err != nil {
-		reply = err.Error()
+		reply = "Something went wrong"
 	} else {
 		reply = "Description: " + activity.Description
 	}

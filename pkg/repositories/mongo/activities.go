@@ -8,19 +8,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	d "github.com/nextuponstream/workoutReminderBot/pkg/domain"
 )
 
-// GetActivities
-func (m *Mongo) getActivities() *mongo.Collection {
-	return m.database.Collection("activities")
-}
-
-// GetActivity from the mongo db activities collection
-func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
+// GetActivity retrieves one activity by name from the mongo database and any errors encountered
+func (m *Mongo) GetActivity(activityName string) (d.Activity, error) {
 	filter := bson.D{{"name", activityName}}
 
-	var activity e.Activity
+	var activity d.Activity
 	err := m.getActivities().FindOne(context.TODO(), filter).Decode(&activity)
 	if err != nil {
 		// ErrNoDocuments means that the filter did not match any documents in the collection
@@ -33,7 +28,7 @@ func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
 	return activity, err
 }
 
-// ActivityExists returns true if activity exists
+// ActivityExists returns true if activity exists in mongo database and any error encountered
 func (m *Mongo) activityExists(activityName string) (bool, error) {
 	_, err := m.GetActivity(activityName)
 	isMissing := err == mongo.ErrNoDocuments
@@ -46,8 +41,8 @@ func (m *Mongo) activityExists(activityName string) (bool, error) {
 	}
 }
 
-// AddActivityIfNotExists in mongo db in activities collection
-func (m *Mongo) AddActivityIfNotExists(activity e.Activity) error {
+// AddActivityIfNotExists adds activity in mongo database and returns any error encountered
+func (m *Mongo) AddActivityIfNotExists(activity d.Activity) error {
 	exists, err := m.activityExists(activity.Name)
 	if err != nil {
 		log.Fatal(err)
@@ -63,4 +58,9 @@ func (m *Mongo) AddActivityIfNotExists(activity e.Activity) error {
 	}
 
 	return nil
+}
+
+// getActivities
+func (m *Mongo) getActivities() *mongo.Collection {
+	return m.database.Collection("activities")
 }
