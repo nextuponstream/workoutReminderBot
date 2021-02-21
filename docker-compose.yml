@@ -5,16 +5,29 @@ networks:
 services: 
   mdb:
     build: ./docker/mongo
-    container_name: wrb_mdb
+    image: nextuponstream/wrb_mongo
+    container_name: ${CONTAINER_NAME_MONGO}
     env_file:  
       - .env
     ports: 
       - 8444:27017
     networks: 
       - web
+  ngdb:
+    build: ./docker/neo4j
+    image: nextuponstream/wrb_neo4j
+    container_name: wrb_ngdb
+    env_file:  
+      - .env
+    ports:
+      - 7474:7474 
+      - 7687:7687
+    networks: 
+      - web
 
   bot:
     build: ./docker/go
+    image: nextuponstream/wrb_bot
     container_name: wrb_go
     env_file:  
       - .env

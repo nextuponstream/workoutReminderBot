@@ -8,17 +8,15 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 
-	e "github.com/nextuponstream/workoutReminderBot/pkg/entities"
+	d "github.com/nextuponstream/workoutReminderBot/pkg/domain"
 )
 
-// from https://www.mongodb.com/golang
-
-func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
-	collection := m.database.Collection("activities")
+// GetActivity retrieves one activity by name from the mongo database and any errors encountered
+func (m *Mongo) GetActivity(activityName string) (d.Activity, error) {
 	filter := bson.D{{"name", activityName}}
 
-	var activity e.Activity
-	err := collection.FindOne(context.TODO(), filter).Decode(&activity)
+	var activity d.Activity
+	err := m.getActivities().FindOne(context.TODO(), filter).Decode(&activity)
 	if err != nil {
 		// ErrNoDocuments means that the filter did not match any documents in the collection
 		if err == mongo.ErrNoDocuments {
@@ -30,7 +28,8 @@ func (m *Mongo) GetActivity(activityName string) (e.Activity, error) {
 	return activity, err
 }
 
-func (m *Mongo) ActivityExists(activityName string) (bool, error) {
+// ActivityExists returns true if activity exists in mongo database and any error encountered
+func (m *Mongo) activityExists(activityName string) (bool, error) {
 	_, err := m.GetActivity(activityName)
 	isMissing := err == mongo.ErrNoDocuments
 	if isMissing {
@@ -42,8 +41,9 @@ func (m *Mongo) ActivityExists(activityName string) (bool, error) {
 	}
 }
 
-func (m *Mongo) InsertActivity(activity e.Activity) error {
-	exists, err := m.ActivityExists(activity.Name)
+// AddActivityIfNotExists adds activity in mongo database and returns any error encountered
+func (m *Mongo) AddActivityIfNotExists(activity d.Activity) error {
+	exists, err := m.activityExists(activity.Name)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -52,11 +52,15 @@ func (m *Mongo) InsertActivity(activity e.Activity) error {
 		return errors.New("activity already exists")
 	}
 
-	collection := m.database.Collection("activities")
-	_, err = collection.InsertOne(context.TODO(), activity)
+	_, err = m.getActivities().InsertOne(context.TODO(), activity)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	return nil
+}
+
+// getActivities
+func (m *Mongo) getActivities() *mongo.Collection {
+	return m.database.Collection("activities")
 }
