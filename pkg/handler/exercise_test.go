@@ -1,10 +1,10 @@
-package exercise_test
+package handler_test
 
 import (
 	"testing"
 
 	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
-	"github.com/nextuponstream/workoutReminderBot/pkg/handlers/exercise"
+	"github.com/nextuponstream/workoutReminderBot/pkg/handler"
 )
 
 type Ex = domain.Exercise
@@ -33,7 +33,7 @@ func TestGetE(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		got, err := exercise.GetExercice(tt.msg)
+		got, err := handler.GetExercice(tt.msg)
 		if tt.wantError {
 			if tt.expectedErr == nil {
 				if err == nil {

@@ -1,7 +1,7 @@
 package neo4j
 
 import (
-	"errors"
+	"log"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/neo4j/neo4j-go-driver/v4/neo4j"
@@ -43,21 +43,51 @@ func (n *Neo4j) AddExerciseIfNotExists(e domain.Exercise, user tgbotapi.User, a 
 }
 
 // GetExercises retrieves all exercises created by user
-func GetExercises(user tgbotapi.User) ([]domain.Exercise, error) {
-	// TODO get all exercises from user
-	/*
-	   re := record.(*db.Record)
-	   	if id, ok := re.Get("n.id"); ok {
-	   		item.Id = id.(int64)
-	   	} else {
-	   		return item, errors.New("could not find id field")
-	   	}
-	   	if name, ok := re.Get("n.name"); ok {
-	   		item.Name = name.(string)
-	   	} else {
-	   		return item, errors.New("could not find name field")
-	   	}
+func (n *Neo4j) GetExercises(user tgbotapi.User) ([]domain.Exercise, error) {
+	session := n.driver.NewSession(neo4j.SessionConfig{})
+	defer session.Close()
+	//  https://stackoverflow.com/a/24016201
+	query :=
+		"MATCH (u:User { tid: $userId })\n" +
+			"MATCH (a:Activity)\n" +
+			"MATCH (u)-[e:EXERCISE]->(a)\n" +
+			"RETURN a.name, e.reps, e.set, e.length, e.duration, e.notes"
+	params := map[string]interface{}{
+		"userId": user.ID,
+	}
 
-	*/
-	return []domain.Exercise{}, errors.New("not implemented")
+	records, err := session.Run(query, params)
+	if err != nil {
+		return []domain.Exercise{}, err
+	}
+
+	exercices := []domain.Exercise{}
+
+	for records.Next() {
+		re := records.Record()
+		log.Print(re)
+		ex := domain.Exercise{}
+		if activityName, ok := re.Get("a.name"); ok {
+			ex.Activity = activityName.(string)
+		}
+		if reps, ok := re.Get("e.reps"); ok {
+			ex.Reps = int(reps.(int64))
+		}
+		if set, ok := re.Get("e.set"); ok {
+			ex.Set = int(set.(int64))
+		}
+		if length, ok := re.Get("e.length"); ok {
+			ex.Length = float32(length.(float64))
+		}
+		if duration, ok := re.Get("e.duration"); ok {
+			ex.Duration = duration.(string)
+		}
+		if notes, ok := re.Get("e.notes"); ok {
+			ex.Notes = notes.(string)
+		}
+
+		exercices = append(exercices, ex)
+	}
+
+	return exercices, nil
 }

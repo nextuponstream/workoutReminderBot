@@ -5,13 +5,10 @@ import (
 	"os"
 	"strings"
 
-	domain "github.com/nextuponstream/workoutReminderBot/pkg/domain"
-	activity "github.com/nextuponstream/workoutReminderBot/pkg/handlers/activity"
-	exercise "github.com/nextuponstream/workoutReminderBot/pkg/handlers/exercise"
-	help "github.com/nextuponstream/workoutReminderBot/pkg/handlers/help"
-	unknown "github.com/nextuponstream/workoutReminderBot/pkg/handlers/unknown"
-	mongo "github.com/nextuponstream/workoutReminderBot/pkg/repositories/mongo"
-	neo4j "github.com/nextuponstream/workoutReminderBot/pkg/repositories/neo4j"
+	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
+	"github.com/nextuponstream/workoutReminderBot/pkg/handler"
+	"github.com/nextuponstream/workoutReminderBot/pkg/repositories/mongo"
+	"github.com/nextuponstream/workoutReminderBot/pkg/repositories/neo4j"
 
 	tgbotapi "github.com/Syfaro/telegram-bot-api"
 )
@@ -64,15 +61,17 @@ func main() {
 		// Extract the command from the Message.
 		switch update.Message.Command() {
 		case "help":
-			go help.Handler(bot, userMessage)
+			go handler.Help(bot, userMessage)
 		case "activity":
-			go activity.Handler(p, bot, userMessage)
+			go handler.Activity(p, bot, userMessage)
 		case "viewactivity":
-			go activity.HandlerView(p, bot, userMessage)
+			go handler.ActivityView(p, bot, userMessage)
 		case "exercise":
-			go exercise.Handler(p, bot, userMessage)
+			go handler.Exercise(p, bot, userMessage)
+		case "viewexercises":
+			go handler.ExercisesView(p, bot, userMessage)
 		default:
-			go unknown.Handler(bot, userMessage)
+			go handler.Unknown(bot, userMessage)
 		}
 	}
 }

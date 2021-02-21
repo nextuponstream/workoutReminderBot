@@ -12,12 +12,12 @@ func CreateActivity(name string) Activity {
 	return a
 }
 
-// AddActivityIfNotExists adds an activity to the database and returns any encountered errors
+// AddActivityIfNotExists adds an activity to the document database and returns any encountered errors
 func (p *Persistence) AddActivityIfNotExists(a Activity) error {
 	return p.dp.AddActivityIfNotExists(a)
 }
 
-// ViewActivity search an activity in the database by name and returns any encountered errors
+// ViewActivity search an activity in the document database by name and returns any encountered errors
 func (p *Persistence) ViewActivity(name string) (Activity, error) {
 	return p.dp.GetActivity(name)
 }

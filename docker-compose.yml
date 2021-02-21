@@ -5,6 +5,7 @@ networks:
 services: 
   mdb:
     build: ./docker/mongo
+    image: nextuponstream/wrb_mongo
     container_name: ${CONTAINER_NAME_MONGO}
     env_file:  
       - .env
@@ -14,6 +15,7 @@ services:
       - web
   ngdb:
     build: ./docker/neo4j
+    image: nextuponstream/wrb_neo4j
     container_name: wrb_ngdb
     env_file:  
       - .env
@@ -25,6 +27,7 @@ services:
 
   bot:
     build: ./docker/go
+    image: nextuponstream/wrb_bot
     container_name: wrb_go
     env_file:  
       - .env

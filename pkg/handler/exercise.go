@@ -1,7 +1,8 @@
-package exercise
+package handler
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -10,8 +11,8 @@ import (
 	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
 )
 
-// Handler persist an activity created by the telegram user
-func Handler(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+// Exercise handles user request to persist an exercise
+func Exercise(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	err := p.AddUserIfNotExists(*userMessage.From)
 	if err != nil {
 		log.Fatal(err)
@@ -59,7 +60,49 @@ func Handler(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.M
 	bot.Send(msg)
 }
 
-// getExercice from user message
+// ExercisesView handles user request to view all exercises he created
+func ExercisesView(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+	exercices, err := p.GetExercises(*userMessage.From)
+	if err != nil {
+		reply := "An error occured while retrieving your exercises"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+	}
+
+	reply := ""
+	for _, ex := range exercices {
+		reps := ""
+		if ex.Reps > 0 {
+			reps = fmt.Sprintf("reps: %d\n", ex.Reps)
+		}
+		sets := ""
+		if ex.Set > 0 {
+			sets = fmt.Sprintf("sets: %d\n", ex.Set)
+		}
+		length := ""
+		if ex.Length > 0 {
+			length = fmt.Sprintf("length: %.2f kms\n", ex.Length)
+		}
+		duration := ""
+		if ex.Duration != "" {
+			duration = fmt.Sprintf("duration:%s\n", ex.Duration)
+		}
+		reply = reply +
+			"Activity -- " + ex.Activity + " --\n" +
+			reps +
+			sets +
+			length +
+			duration +
+			"\n"
+	}
+
+	msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+	msg.ReplyToMessageID = userMessage.MessageID
+	bot.Send(msg)
+}
+
+// GetExercice from user message
 func GetExercice(usrMsg string) (domain.Exercise, error) {
 	ex := domain.Exercise{}
 	sep := " "
