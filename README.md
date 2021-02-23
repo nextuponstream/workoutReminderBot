@@ -6,10 +6,11 @@
 |`/help` | instructions on bot usage |
 | `/exercise <activity name> [<r/s/l/d/n value>]` | create exercise for activity and optionnaly indicate its reps, sets, length, duration and notes |
 |`/viewexercises`| view all exercises created by you |
-|`/activity <name of the activity> <a description>` | provide a description for an activity |
-|`/viewactivity <name of the activity>`| view an activity description |
-|`/createWorkout` | not implemented |
-|`/startWorkout` | not implemented |
+|`/activity <name> <a description>` | provide a description for an activity |
+|`/viewactivity <name>`| view an activity description |
+|`/workout <name> <activities>` | create a workout made of activities |
+|`/routine <name> <workouts>` | create a routine made of workouts |
+|`/remindme <routine> <from> <to> <when: mo/tu/we/th/fr/sa/su>` | sends a reminder to maintain the routine |
 
 # Setup
 ## BotFather
