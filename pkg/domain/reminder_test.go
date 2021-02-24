@@ -11,11 +11,11 @@ func TestAtLeastOneDay(t *testing.T) {
 		w        domain.Week
 		expected bool
 	}{
-		{domain.Week{false, false, false, false, false, false, false}, false},
-		{domain.Week{false, true, false, false, false, false, false}, true},
-		{domain.Week{false, false, true, false, false, false, false}, true},
-		{domain.Week{false, false, false, false, true, false, false}, true},
-		{domain.Week{false, false, false, false, false, false, true}, true},
+		{domain.Week{[7]bool{false, false, false, false, false, false, false}}, false},
+		{domain.Week{[7]bool{false, true, false, false, false, false, false}}, true},
+		{domain.Week{[7]bool{false, false, true, false, false, false, false}}, true},
+		{domain.Week{[7]bool{false, false, false, false, true, false, false}}, true},
+		{domain.Week{[7]bool{false, false, false, false, false, false, true}}, true},
 	}
 
 	for _, tt := range tests {
@@ -27,7 +27,7 @@ func TestAtLeastOneDay(t *testing.T) {
 }
 
 func TestIsValidReminder(t *testing.T) {
-	w := domain.Week{false, false, false, false, false, false, true}
+	w := domain.Week{[7]bool{false, false, false, false, false, false, true}}
 	tests := []struct {
 		r        domain.Reminder
 		expected bool

@@ -5,13 +5,7 @@ const MAX_START = 21
 const MIN_PERIOD_REMINDER = 1
 
 type Week struct {
-	Monday    bool
-	Tuesday   bool
-	Wednesday bool
-	Thursday  bool
-	Friday    bool
-	Saturday  bool
-	Sunday    bool
+	Week [7]bool
 }
 
 type Reminder struct {
@@ -20,10 +14,15 @@ type Reminder struct {
 	To   int // 0-23 hours
 }
 
-// AtLeastOneDay returns true if there's one day of the week that you want to be reminded of your
-// workout
+// AtLeastOneDay returns true if there's one day of the week that you want to be reminded of your workout
 func (w Week) AtLeastOneDay() bool {
-	return w.Monday || w.Tuesday || w.Wednesday || w.Thursday || w.Friday || w.Saturday || w.Sunday
+	for _, day := range w.Week {
+		if day {
+			return true
+		}
+	}
+
+	return false
 }
 
 // IsValid returns true if you are a normal folk that trains in reasonable hours

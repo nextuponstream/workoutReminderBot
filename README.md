@@ -24,6 +24,9 @@ exercise - create exercise for activity and optionnaly indicate its reps, sets, 
 viewexercises - view all exercises created by you
 activity - create an activity for your next workout with an optionnal description (e.g. /activity push-ups let's f*cking goooooo!)
 viewactivity - view an activity description
+workout - create a workout made of activities (e.g. /workout gitStrong pushups run)
+routine - create a routine made of workouts (e.g. /routine gitStrong)
+remindme - sends a reminder to maintain the routine (e.g. /remindme gitStrong 16 21 tu we th fr sa)
 ```
 ## Environnement file
 Create your own environnement file `.env` by following the example file `example.env`.

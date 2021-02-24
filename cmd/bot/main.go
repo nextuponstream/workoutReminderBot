@@ -70,6 +70,12 @@ func main() {
 			go handler.Exercise(p, bot, userMessage)
 		case "viewexercises":
 			go handler.ExercisesView(p, bot, userMessage)
+		case "workout":
+			go handler.Workout(p, bot, userMessage)
+		case "routine":
+			go handler.Routine(p, bot, userMessage)
+		case "remindme":
+			go handler.RemindMe(p, bot, userMessage)
 		default:
 			go handler.Unknown(bot, userMessage)
 		}
