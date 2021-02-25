@@ -9,9 +9,10 @@ type Week struct {
 }
 
 type Reminder struct {
-	When Week
-	From int // 0-23 hours
-	To   int // 0-23 hours
+	RoutineName string
+	When        Week
+	From        int // 0-23 hours
+	To          int // 0-23 hours
 }
 
 // AtLeastOneDay returns true if there's one day of the week that you want to be reminded of your workout

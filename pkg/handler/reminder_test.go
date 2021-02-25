@@ -13,11 +13,11 @@ func TestRemindMe(t *testing.T) {
 		reminder domain.Reminder
 		expected string
 	}{
-		{domain.Reminder{domain.Week{[7]bool{true, true, true, false, false, false, false}}, 16, 17}, "You will be reminded on: Monday, Tuesday, Wednesday"},
-		{domain.Reminder{domain.Week{[7]bool{false, false, false, false, false, false, true}}, 16, 17}, "You will be reminded on: Sunday"},
-		{domain.Reminder{domain.Week{[7]bool{false, true, true, false, false, false, true}}, 16, 17}, "You will be reminded on: Tuesday, Wednesday, Sunday"},
-		{domain.Reminder{domain.Week{[7]bool{false, true, false, false, false, false, false}}, 16, 17}, "You will be reminded on: Tuesday"},
-		{domain.Reminder{domain.Week{[7]bool{false, true, true, false, false, false, false}}, 16, 17}, "You will be reminded on: Tuesday, Wednesday"},
+		{domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{true, true, true, false, false, false, false}}, From: 16, To: 17}, "You will be reminded on: Monday, Tuesday, Wednesday"},
+		{domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, false, false, true}}, From: 16, To: 17}, "You will be reminded on: Sunday"},
+		{domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, true, true, false, false, false, true}}, From: 16, To: 17}, "You will be reminded on: Tuesday, Wednesday, Sunday"},
+		{domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, true, false, false, false, false, false}}, From: 16, To: 17}, "You will be reminded on: Tuesday"},
+		{domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, true, true, false, false, false, false}}, From: 16, To: 17}, "You will be reminded on: Tuesday, Wednesday"},
 	}
 
 	for _, tt := range tests {
@@ -34,11 +34,11 @@ func TestRemainingDayBeforeReminder(t *testing.T) {
 		reminder domain.Reminder
 		expected int
 	}{
-		{0, domain.Reminder{domain.Week{[7]bool{true, true, true, false, false, false, false}}, 16, 17}, 1},
-		{1, domain.Reminder{domain.Week{[7]bool{false, false, false, false, false, false, true}}, 16, 17}, 5},
-		{3, domain.Reminder{domain.Week{[7]bool{false, true, true, false, false, false, true}}, 16, 17}, 3},
-		{6, domain.Reminder{domain.Week{[7]bool{false, true, false, false, false, false, false}}, 16, 17}, 2},
-		{6, domain.Reminder{domain.Week{[7]bool{false, false, false, false, false, false, true}}, 16, 17}, 7},
+		{0, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{true, true, true, false, false, false, false}}, From: 16, To: 17}, 1},
+		{1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, false, false, true}}, From: 16, To: 17}, 5},
+		{3, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, true, true, false, false, false, true}}, From: 16, To: 17}, 3},
+		{6, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, true, false, false, false, false, false}}, From: 16, To: 17}, 2},
+		{6, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, false, false, true}}, From: 16, To: 17}, 7},
 	}
 
 	for _, tt := range tests {
@@ -112,17 +112,17 @@ func TestGetRemainingTime(t *testing.T) {
 		expected time.Duration
 		wantErr  bool
 	}{
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 15, 18}, 0, false},
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 16, 18}, time.Hour, false},
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 17, 18}, 2 * time.Hour, false},
-		{day2, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 17, 18}, time.Hour + 30*time.Minute, false},
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, false, true, false, false, false}}, 17, 18}, 26 * time.Hour, false},
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, false, false, true, false, false}}, 17, 18}, 50 * time.Hour, false},
-		{day2, domain.Reminder{domain.Week{[7]bool{false, false, false, false, true, false, false}}, 17, 18}, 49*time.Hour + 30*time.Minute, false},
-		{day1, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 14, 18}, 167 * time.Hour, false},
-		{day2, domain.Reminder{domain.Week{[7]bool{false, false, true, false, false, false, false}}, 15, 18}, 168*time.Hour - 30*time.Minute, false},
-		{day3, domain.Reminder{domain.Week{[7]bool{false, false, false, false, false, false, true}}, 15, 18}, 0, false},
-		{day4, domain.Reminder{domain.Week{[7]bool{false, false, false, false, false, false, true}}, 15, 18}, 168*time.Hour - 30*time.Minute, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 15, To: 18}, 0, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 16, To: 18}, time.Hour, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 17, To: 18}, 2 * time.Hour, false},
+		{day2, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 17, To: 18}, time.Hour + 30*time.Minute, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, true, false, false, false}}, From: 17, To: 18}, 26 * time.Hour, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, true, false, false}}, From: 17, To: 18}, 50 * time.Hour, false},
+		{day2, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, true, false, false}}, From: 17, To: 18}, 49*time.Hour + 30*time.Minute, false},
+		{day1, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 14, To: 18}, 167 * time.Hour, false},
+		{day2, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, true, false, false, false, false}}, From: 15, To: 18}, 168*time.Hour - 30*time.Minute, false},
+		{day3, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, false, false, true}}, From: 15, To: 18}, 0, false},
+		{day4, domain.Reminder{RoutineName: "", When: domain.Week{Week: [7]bool{false, false, false, false, false, false, true}}, From: 15, To: 18}, 168*time.Hour - 30*time.Minute, false},
 	}
 
 	for _, tt := range tests {

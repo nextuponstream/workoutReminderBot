@@ -32,13 +32,13 @@ func TestIsValidReminder(t *testing.T) {
 		r        domain.Reminder
 		expected bool
 	}{
-		{domain.Reminder{w, 0, 1}, false},
-		{domain.Reminder{w, 3, 8}, false},
-		{domain.Reminder{w, 17, 16}, false},
-		{domain.Reminder{w, 22, 23}, false},
-		{domain.Reminder{w, 6, 7}, true},
-		{domain.Reminder{w, 16, 21}, true},
-		{domain.Reminder{w, 21, 22}, true},
+		{domain.Reminder{"", w, 0, 1}, false},
+		{domain.Reminder{"", w, 3, 8}, false},
+		{domain.Reminder{"", w, 17, 16}, false},
+		{domain.Reminder{"", w, 22, 23}, false},
+		{domain.Reminder{"", w, 6, 7}, true},
+		{domain.Reminder{"", w, 16, 21}, true},
+		{domain.Reminder{"", w, 21, 22}, true},
 	}
 
 	for _, tt := range tests {

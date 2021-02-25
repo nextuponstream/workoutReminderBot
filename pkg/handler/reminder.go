@@ -2,6 +2,8 @@ package handler
 
 import (
 	"errors"
+	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -12,28 +14,95 @@ import (
 // TODO cancel map of user reminders
 
 // RemindMe handles all /remindme commands of a telegram user
-func RemindMe(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
+func RemindMe(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) (chan struct{}, domain.Reminder, error) {
 	// TODO parse user message to build reminder
 	reminder := domain.Reminder{}
-	// TODO if ok reminder then create goroutine
+	msg := userMessage.Text
+	tokens := strings.Split(msg, " ")
+	if len(tokens) < 5 {
+		reply := "Not enough arguments in reminder"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+		return nil, reminder, errors.New("Not enough arguments")
+	}
+	reminder.RoutineName = tokens[1]
+	from, err := strconv.Atoi(tokens[2])
+	if err != nil {
+		reply := "Cannot read `from`"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+		return nil, reminder, errors.New(reply)
+	}
+	reminder.From = from
+	to, err := strconv.Atoi(tokens[3])
+	if err != nil {
+		reply := "Cannot read `to`"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+		return nil, reminder, errors.New(reply)
+	}
+	reminder.To = to
+
+	reminder.When = ParseWeek(tokens[4:])
+	if !reminder.IsValid() {
+		reply := "Could not parse reminder, please set your reminder between 6am-21pm and use at least one of: mo/tu/we/th/fr/sa/su"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+		return nil, reminder, errors.New("Invalid weekdays for reminder")
+	}
+
+	cancel := make(chan struct{})
+	go remindUser(reminder, cancel, p, bot, userMessage)
+
+	return cancel, reminder, nil
+}
+
+// ParseWeek set week with arguments
+func ParseWeek(args []string) domain.Week {
+	week := domain.Week{}
+	weekdays := make(map[string]int)
+	weekdays["mo"] = 0
+	weekdays["tu"] = 1
+	weekdays["we"] = 2
+	weekdays["th"] = 3
+	weekdays["fr"] = 4
+	weekdays["sa"] = 5
+	weekdays["su"] = 6
+	for _, day := range args {
+		if index, ok := weekdays[day]; ok {
+			week.Week[index] = true
+		}
+	}
+	return week
+}
+
+// remindUser waits until timeout of reminder to remind user of his routine. Can be cancelled with cancel channel.
+func remindUser(reminder domain.Reminder, cancel chan struct{}, p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	for {
-		duration, err := GetRemainingTime(time.Now(), reminder)
+		// TODO set now to user local time
+		now := time.Now()
+		duration, err := GetRemainingTime(now, reminder)
 		if err != nil {
 			reply := "Bad reminder"
 			msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
 			msg.ReplyToMessageID = userMessage.MessageID
 			bot.Send(msg)
-			return
 		}
 
-		reply := "Reminder was cancelled"
+		log.Println("now:", now, "duration:", duration) // TODO remove
+
+		reply := ""
 		select {
 		case <-time.After(duration):
 			reply = RemindMessage(reminder)
 			// TODO fetch all exercise once timeout is reached and add to reply
-			// TODO case cancel
-			// case <-cancel
-			// break;
+		case <-cancel:
+			reply = "Reminder was cancelled"
+			break
 		}
 
 		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)

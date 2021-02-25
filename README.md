@@ -11,6 +11,7 @@
 |`/workout <name> <activities>` | create a workout made of activities |
 |`/routine <name> <workouts>` | create a routine made of workouts |
 |`/remindme <routine> <from> <to> <when: mo/tu/we/th/fr/sa/su>` | sends a reminder to maintain the routine |
+|`/cancel [<routines>]`| cancel all reminders or for all mentionned routines |
 
 # Setup
 ## BotFather
@@ -27,6 +28,7 @@ viewactivity - view an activity description
 workout - create a workout made of activities (e.g. /workout gitStrong pushups run)
 routine - create a routine made of workouts (e.g. /routine gitStrong)
 remindme - sends a reminder to maintain the routine (e.g. /remindme gitStrong 16 21 tu we th fr sa)
+cancel - cancel all reminders or for all mentionned routines (e.g. /cancel OR /cancel gitStrong)
 ```
 ## Environnement file
 Create your own environnement file `.env` by following the example file `example.env`.
