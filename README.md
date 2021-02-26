@@ -4,6 +4,7 @@
 | Command | description |
 |---|----|
 |`/help` | instructions on bot usage |
+|`/timezone <name>`| 🔴 set your timezone for all commands to work correctly (default is CET) |
 | `/exercise <activity name> [<r/s/l/d/n value>]` | create exercise for activity and optionnaly indicate its reps, sets, length, duration and notes |
 |`/viewexercises`| view all exercises created by you |
 |`/activity <name> <a description>` | provide a description for an activity |
@@ -13,6 +14,7 @@
 |`/remindme <routine> <from> <to> <when: mo/tu/we/th/fr/sa/su>` | sends a reminder to maintain the routine |
 |`/cancel [<routines>]`| cancel all reminders or for all mentionned routines |
 
+**🔴 IMPORTANT 🔴**: Set your `/timezone` so all other commands can work correctly for you!!! 
 # Setup
 ## BotFather
 ### Register bot
@@ -21,6 +23,7 @@ Go on telegram, start a chat with BotFather and create a new bot via `/newBot`. 
 With BotFather, set commands with `/setCommands` and paste:
 ```
 help - instructions on bot usage
+timezone - 🔴 set your timezone for all commands to work correctly (default is CET)
 exercise - create exercise for activity and optionnaly indicate its reps, sets, length, duration and notes (e.g. /exercise <activity name> <r, s, l, d or n value>)
 viewexercises - view all exercises created by you
 activity - create an activity for your next workout with an optionnal description (e.g. /activity push-ups let's f*cking goooooo!)

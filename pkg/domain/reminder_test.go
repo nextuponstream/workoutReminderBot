@@ -35,7 +35,7 @@ func TestIsValidReminder(t *testing.T) {
 		{domain.Reminder{"", w, 0, 1}, false},
 		{domain.Reminder{"", w, 3, 8}, false},
 		{domain.Reminder{"", w, 17, 16}, false},
-		{domain.Reminder{"", w, 22, 23}, false},
+		{domain.Reminder{"", w, domain.MAX_START + 1, domain.MAX_START + 2}, false},
 		{domain.Reminder{"", w, 6, 7}, true},
 		{domain.Reminder{"", w, 16, 21}, true},
 		{domain.Reminder{"", w, 21, 22}, true},

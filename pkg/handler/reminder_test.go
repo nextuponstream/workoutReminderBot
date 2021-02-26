@@ -79,21 +79,17 @@ func TestAddDays(t *testing.T) {
 		from     int
 		to       int
 		expected time.Duration
-		errWant  bool
 	}{
-		{0, 1, time.Hour * 24, false},
-		{3, 6, 3 * time.Hour * 24, false},
-		{1, 1, 0, false},
-		{2, 1, time.Hour * 24, true},
+		{0, 1, time.Hour * 24},
+		{3, 6, 3 * time.Hour * 24},
+		{1, 1, 0},
+		{2, 1, 6 * time.Hour * 24},
+		{6, 5, 6 * time.Hour * 24},
 	}
 
 	for _, tt := range tests {
-		got, err := handler.AddDays(tt.from, tt.to)
-		if tt.errWant {
-			if err == nil {
-				t.Errorf("from: %v; to: %v; got %v; want error but got none;", tt.from, tt.to, got)
-			}
-		} else if got != tt.expected {
+		got := handler.AddDays(tt.from, tt.to)
+		if got != tt.expected {
 			t.Errorf("from: %v; to: %v; got %v; want %v;", tt.from, tt.to, got, tt.expected)
 		}
 	}

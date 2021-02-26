@@ -2,22 +2,21 @@ package mongo
 
 import (
 	"context"
-	"errors"
 	"log"
-	"strconv"
 
-	tgbotapi "github.com/Syfaro/telegram-bot-api"
 	"github.com/nextuponstream/workoutReminderBot/pkg/domain"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // GetActivity from the mongo db activities collection
-func (m *Mongo) GetUser(id string) (domain.User, error) {
-	filter := bson.D{{"id", id}}
+func (m *Mongo) GetUser(telegramId string) (domain.User, error) {
+	//filter := bson.D{{"timezone", "CET"}} //why did it work
+	filter := bson.D{{"telegram_id", telegramId}} // FIXME nope
 
 	var user domain.User
-	err := m.getActivities().FindOne(context.TODO(), filter).Decode(&user)
+	err := m.getUsers().FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		// ErrNoDocuments means that the filter did not match any documents in the collection
 		if err == mongo.ErrNoDocuments {
@@ -26,22 +25,21 @@ func (m *Mongo) GetUser(id string) (domain.User, error) {
 		log.Fatal(err)
 	}
 
-	return user, err
+	return user, nil
 }
 
-// AddUserIfNotExists with some relevant details
-func (m *Mongo) AddUserIfNotExists(user tgbotapi.User) error {
-	exists, err := m.userExists(user)
-	if err != nil {
-		return err
-	}
-
-	if exists {
-		return errors.New("user already exists")
-	}
-
-	usr := domain.CreateUser(user)
-	_, err = m.getUsers().InsertOne(context.TODO(), usr)
+// UpsertUser with some relevant details
+func (m *Mongo) UpsertUser(user domain.User) error {
+	opts := options.Replace().SetUpsert(true)
+	filter := bson.D{{"telegram_id", user.TelegramId}}
+	replacement := bson.D{
+		{"telegram_id", user.TelegramId},
+		{"first_name", user.FirstName},
+		{"last_name", user.LastName},
+		{"username", user.UserName},
+		{"registration_time", user.RegistrationTime},
+		{"timezone", user.Timezone}}
+	_, err := m.getUsers().ReplaceOne(context.TODO(), filter, replacement, opts)
 
 	return err
 }
@@ -49,17 +47,4 @@ func (m *Mongo) AddUserIfNotExists(user tgbotapi.User) error {
 // getUsers collection from which you can insert a user via InsertOne
 func (m *Mongo) getUsers() *mongo.Collection {
 	return m.database.Collection("users")
-}
-
-// userExists
-func (m *Mongo) userExists(user tgbotapi.User) (bool, error) {
-	_, err := m.GetUser(strconv.Itoa(user.ID))
-	isMissing := err == mongo.ErrNoDocuments
-	if isMissing {
-		return false, nil
-	} else if err != nil {
-		return false, err
-	} else { // found, err == nil
-		return true, err
-	}
 }

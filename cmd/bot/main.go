@@ -65,6 +65,8 @@ func main() {
 		switch update.Message.Command() {
 		case "help":
 			go handler.Help(bot, userMessage)
+		case "timezone":
+			go handler.Timezone(p, bot, userMessage)
 		case "activity":
 			go handler.Activity(p, bot, userMessage)
 		case "viewactivity":

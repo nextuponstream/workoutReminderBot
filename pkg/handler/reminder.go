@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"strings"
@@ -15,7 +16,6 @@ import (
 
 // RemindMe handles all /remindme commands of a telegram user
 func RemindMe(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) (chan struct{}, domain.Reminder, error) {
-	// TODO parse user message to build reminder
 	reminder := domain.Reminder{}
 	msg := userMessage.Text
 	tokens := strings.Split(msg, " ")
@@ -83,29 +83,52 @@ func ParseWeek(args []string) domain.Week {
 // remindUser waits until timeout of reminder to remind user of his routine. Can be cancelled with cancel channel.
 func remindUser(reminder domain.Reminder, cancel chan struct{}, p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
 	for {
-		// TODO set now to user local time
-		now := time.Now()
+		user, err := p.GetUser(strconv.Itoa(userMessage.From.ID))
+		if err != nil {
+			log.Print(err)
+			reply := "Couldn't get your timezone from the database"
+			msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+			msg.ReplyToMessageID = userMessage.MessageID
+			bot.Send(msg)
+			break
+		}
+		location, err := time.LoadLocation(user.Timezone)
+		if err != nil {
+			reply := "Couldn't parse your timezone"
+			msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+			msg.ReplyToMessageID = userMessage.MessageID
+			bot.Send(msg)
+			break
+		}
+
+		now := time.Now().In(location) // time in user location
 		duration, err := GetRemainingTime(now, reminder)
 		if err != nil {
+			log.Println(err)
 			reply := "Bad reminder"
 			msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
 			msg.ReplyToMessageID = userMessage.MessageID
 			bot.Send(msg)
-		}
-
-		log.Println("now:", now, "duration:", duration) // TODO remove
-
-		reply := ""
-		select {
-		case <-time.After(duration):
-			reply = RemindMessage(reminder)
-			// TODO fetch all exercise once timeout is reached and add to reply
-		case <-cancel:
-			reply = "Reminder was cancelled"
 			break
 		}
 
+		remainingMinutes := int(duration.Minutes()) % 60
+		reply := fmt.Sprintf("Your reminder was set and the next one will come in %dh%dm",
+			int(duration.Hours()), remainingMinutes)
 		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+
+		select {
+		case <-time.After(duration):
+			reply = RemindMessage(reminder)
+		case <-cancel:
+			reply = "Reminder was cancelled"
+			// TODO fetch all exercise once timeout is reached
+			break
+		}
+
+		msg = tgbotapi.NewMessage(userMessage.Chat.ID, reply)
 		msg.ReplyToMessageID = userMessage.MessageID
 		bot.Send(msg)
 	}
@@ -125,12 +148,7 @@ func GetRemainingTime(now time.Time, reminder domain.Reminder) (time.Duration, e
 
 	for {
 		if reminder.When.Week[day] { // found
-			daysDuration, err := AddDays(todayDay, day)
-			if err != nil {
-				return 0, err
-			}
-
-			return duration + daysDuration, nil
+			return duration + AddDays(todayDay, day), nil
 		}
 		day = (day + 1) % 7
 	}
@@ -138,16 +156,13 @@ func GetRemainingTime(now time.Time, reminder domain.Reminder) (time.Duration, e
 
 // AddDays returns a time duration for how many remaining days there is to wait.
 // Note: returns 0 if from == to
-func AddDays(from int, to int) (time.Duration, error) {
-	if from > to {
-		return 0, errors.New("Invalid arguments: from > to")
-	}
+func AddDays(from int, to int) time.Duration {
 	total := time.Duration(0)
-	for day := from; day != to; day++ {
+	for day := from; day != to; day = (day + 1) % 7 {
 		total = total + time.Hour*24
 	}
 
-	return total, nil
+	return total
 }
 
 // TimeUntil returns the duration until some hour on the same day

@@ -15,9 +15,10 @@ type Persistence struct {
 }
 
 type PersistenceI interface {
-	AddUserIfNotExists(tgbotapi.User) error
+	UpsertUser(User) error
 	ViewActivity(string) error
 	GetExercises(tgbotapi.User) ([]Exercise, error)
+	GetUser(User) error
 }
 
 type GraphPersistence interface {
@@ -26,7 +27,8 @@ type GraphPersistence interface {
 }
 
 type DocPersistence interface {
-	AddUserIfNotExists(tgbotapi.User) error
+	UpsertUser(User) error
 	AddActivityIfNotExists(Activity) error
 	GetActivity(activityName string) (Activity, error)
+	GetUser(id string) (User, error)
 }

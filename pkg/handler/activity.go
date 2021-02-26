@@ -11,12 +11,19 @@ import (
 
 // Activity persist an activity created by the telegram user
 func Activity(p domain.Persistence, bot *tgbotapi.BotAPI, userMessage *tgbotapi.Message) {
-	err := p.AddUserIfNotExists(*userMessage.From)
+	var reply string
+	user, err := domain.CreateUser(*userMessage.From, "")
+	if err != nil {
+		reply = "Something went wrong"
+		msg := tgbotapi.NewMessage(userMessage.Chat.ID, reply)
+		msg.ReplyToMessageID = userMessage.MessageID
+		bot.Send(msg)
+		return
+	}
+	err = p.UpsertUser(user)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	var reply string
 
 	usrMsg := userMessage.Text
 	sep := " "
