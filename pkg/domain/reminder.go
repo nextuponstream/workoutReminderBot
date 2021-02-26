@@ -1,7 +1,7 @@
 package domain
 
 const MIN_START = 6
-const MAX_START = 23 // FIXME 21
+const MAX_START = 21
 const MIN_PERIOD_REMINDER = 1
 
 type Week struct {

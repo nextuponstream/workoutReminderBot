@@ -13,7 +13,7 @@ import (
 // GetActivity from the mongo db activities collection
 func (m *Mongo) GetUser(telegramId string) (domain.User, error) {
 	//filter := bson.D{{"timezone", "CET"}} //why did it work
-	filter := bson.D{{"telegram_id", telegramId}} // FIXME nope
+	filter := bson.D{{"telegram_id", telegramId}}
 
 	var user domain.User
 	err := m.getUsers().FindOne(context.TODO(), filter).Decode(&user)
