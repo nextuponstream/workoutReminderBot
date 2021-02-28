@@ -1,4 +1,4 @@
-![build](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![build](https://github.com/nextuponstream/workoutReminderBot/actions/workflows/main.yml/badge.svg)
 
 # How to use the bot
 <img src="./assets/stay_hydrated.jpg" width="40%" />
