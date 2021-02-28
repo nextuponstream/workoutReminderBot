@@ -10,6 +10,7 @@ echo 'Removing all unnecessary containers/images that are used in build'
 # yes command: https://stackoverflow.com/a/7642711
 yes | docker container prune # for wrb_wait_dbs
 yes | docker image prune
+yes | docker volume prune
 docker system prune --volume
 
 ./startDbs.sh # dbs started in background

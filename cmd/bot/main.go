@@ -48,6 +48,9 @@ func main() {
 
 	updates, err := bot.GetUpdatesChan(u)
 
+	reminders := make(map[int]map[domain.Reminder](chan struct{}))
+	// TODO restore reminders on shutdown by parsing the graph database
+
 	for update := range updates {
 		userMessage := update.Message
 		if update.Message == nil { // ignore any non-Message updates
@@ -62,6 +65,8 @@ func main() {
 		switch update.Message.Command() {
 		case "help":
 			go handler.Help(bot, userMessage)
+		case "timezone":
+			go handler.Timezone(p, bot, userMessage)
 		case "activity":
 			go handler.Activity(p, bot, userMessage)
 		case "viewactivity":
@@ -70,6 +75,22 @@ func main() {
 			go handler.Exercise(p, bot, userMessage)
 		case "viewexercises":
 			go handler.ExercisesView(p, bot, userMessage)
+		case "workout":
+			go handler.Workout(p, bot, userMessage)
+		case "routine":
+			go handler.Routine(p, bot, userMessage)
+		case "remindme":
+			cancel, reminder, err := handler.RemindMe(p, bot, userMessage)
+			if err == nil {
+				if _, ok := reminders[userMessage.From.ID]; !ok {
+					reminders[userMessage.From.ID] = make(map[domain.Reminder]chan struct{})
+				}
+				if _, ok := reminders[userMessage.From.ID][reminder]; !ok {
+					reminders[userMessage.From.ID][reminder] = cancel
+				}
+			}
+		case "cancel":
+			go handler.Cancel(reminders, p, bot, userMessage)
 		default:
 			go handler.Unknown(bot, userMessage)
 		}
