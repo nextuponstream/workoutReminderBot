@@ -1,37 +1,33 @@
-version: '3.9'
-networks:
-  web:
+version: "3.9"
 
-services: 
+services:
   mdb:
-    build: ./docker/mongo
-    image: nextuponstream/wrb_mongo
+    image: mongo:3.6.22
     container_name: ${CONTAINER_NAME_MONGO}
-    env_file:  
-      - .env
-    ports: 
-      - 8444:27017
-    networks: 
-      - web
-  ngdb:
-    build: ./docker/neo4j
-    image: nextuponstream/wrb_neo4j
-    container_name: wrb_ngdb
-    env_file:  
+    env_file:
       - .env
     ports:
-      - 7474:7474 
+      - 8444:27017
+
+  ngdb:
+    image: neo4j:4.4.4
+    container_name: wrb_ngdb
+    env_file:
+      - .env
+    ports:
+      - 7474:7474
       - 7687:7687
-    networks: 
-      - web
 
   bot:
     build: ./docker/go
     image: nextuponstream/wrb_bot
     container_name: wrb_go
-    env_file:  
+    restart: "on-failure"
+    environment:
+      - MDB=mdb:27017
+      - NGDB=ngdb:7687
+      - TIMEOUT=10
+    env_file:
       - .env
-    ports: 
+    ports:
       - 8443:3000
-    networks: 
-      - web
